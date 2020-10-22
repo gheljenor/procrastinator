@@ -1,0 +1,25 @@
+language: node_js
+cache: npm
+
+branches:
+  except:
+    - gh-pages
+
+jobs:
+  include:
+    - stage: test
+      script: npm test
+    - stage: build
+      script: npm run build
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        on:
+          branch: master
+        github-token: $GITHUB_TOKEN
+        local-dir: ./public
+
+stages:
+  - test
+  - name: build
+    if: branch = master
