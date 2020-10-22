@@ -6,7 +6,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const dispatchEvent = (event) => () => dispatch(event);
+    const dispatchEvent = (event: string) => () => dispatch(event);
 
     export let current: boolean;
     export let title: string;

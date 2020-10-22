@@ -1,12 +1,12 @@
 import type {TaskData} from "../types";
 import {writable} from "svelte/store";
-import {test} from "svelte/types/compiler/config";
 
 export function createTaskListStore(initialState: TaskData[]) {
-    const store = writable(initialState);
+    const store = writable<TaskData[]>(initialState);
+    const subscribe: typeof store.subscribe = store.subscribe.bind(store);
 
     return {
-        subscribe: store.subscribe.bind(store),
+        subscribe,
         moveUp(task: TaskData) {
             store.update(list => {
                 const idx = list.indexOf(task);
