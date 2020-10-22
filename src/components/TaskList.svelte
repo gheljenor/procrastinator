@@ -24,6 +24,10 @@
     task-list {
         display: block;
         padding: 5px;
+
+        &:empty {
+            display: none;
+        }
     }
 </style>
 

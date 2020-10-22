@@ -6,7 +6,7 @@
 <style lang="less">
     button {
         cursor: pointer;
-        padding: 5px;
+        padding: 10px 5px;
         margin: 0;
         position: relative;
 
