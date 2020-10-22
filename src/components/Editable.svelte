@@ -3,7 +3,7 @@
 
     export let text: string;
 
-    let self;
+    let self: HTMLInputElement;
 
     const dispatch = createEventDispatcher();
 
