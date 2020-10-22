@@ -55,29 +55,29 @@
 
 <task-panel>
     <task-line>
-        <Editable bind:text={title} on:blur={dispatchEvent('changed')} />
-
         {#if !current}
-            <Button title="Left" on:click={dispatchEvent('moveLeft')} />
+            <Button title="Today" on:click={dispatchEvent('moveLeft')} />
             <spacer />
         {/if}
 
-        <Button title="Close" on:click={dispatchEvent('close')} />
+        <Editable bind:text={title} on:blur={() => dispatch('changed', title)} />
+
+        <Button title="Done" on:click={dispatchEvent('close')} />
     </task-line>
 
     {#if current}
         <task-line>
-            <Button title="Up" big={true} on:click={dispatchEvent('moveUp')} />
-            <Button title="Down" big={true} on:click={dispatchEvent('moveDown')} />
+            <Button title="Hurry" big={true} on:click={dispatchEvent('moveUp')} />
+            <Button title="Wait" big={true} on:click={dispatchEvent('moveDown')} />
 
             <spacer />
 
-            <Button title="Top" big={true} on:click={dispatchEvent('moveTop')} />
-            <Button title="Bottom" big={true} on:click={dispatchEvent('moveBottom')} />
+            <Button title="Now" big={true} on:click={dispatchEvent('moveTop')} />
+            <Button title="Later" big={true} on:click={dispatchEvent('moveBottom')} />
 
             <spacer />
 
-            <Button title="Right" big={true} on:click={dispatchEvent('moveRight')} />
+            <Button title="Tomorrow" big={true} on:click={dispatchEvent('moveRight')} />
         </task-line>
     {/if}
 </task-panel>

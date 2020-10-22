@@ -28,11 +28,11 @@
 </style>
 
 <task-list>
-    {#each taskList as task (task.id)}
+    {#each $taskList as task (task.id)}
         <Task
                 {current}
-                bind:title={task.title}
-                on:changed={() => taskList.identity()}
+                title={task.title}
+                on:changed={event => taskList.updateTask(task, event.detail)}
                 on:close={() => taskList.remove(task)}
                 on:moveDown={() => taskList.moveDown(task)}
                 on:moveBottom={() => taskList.moveBottom(task)}

@@ -6,17 +6,14 @@
     import Button from "./components/Button.svelte";
     import type {TaskListStore} from "./stores/task-list";
     import {createTaskListStore} from "./stores/task-list";
-    import {derived} from "svelte/store";
 
     const [initialCurrent, initialNext] = [
-        loadState("current"),
-        loadState("next"),
+        loadStateComponent("current"),
+        loadStateComponent("next"),
     ];
 
     export let current: TaskListStore = createTaskListStore(initialCurrent);
     export let next: TaskListStore = createTaskListStore(initialNext);
-
-    const fullState = derived([current, next], ([current, next]) => ({current, next}));
 
     let newTask: string = "";
     let fromHistory: boolean = false;
@@ -28,25 +25,23 @@
 
     $: console.debug("counter", counter);
 
-    current.subscribe(values => storeState("current", values));
-    next.subscribe(values => storeState("next", values));
-    fullState.subscribe(state => {
-        if (!state.current.length) {
-            current.set(state.next);
-            next.set([]);
-        } else {
-            storeHistory(state);
-        }
-    });
+    $: storeStateComponent("current", $current);
+    $: storeStateComponent("next", $next);
+    $: storeHistory({current: $current, next: $next});
 
-    history.replaceState({initialCurrent, initialNext}, document.title);
-
-    function storeState(key: string, value: TaskData[]) {
-        localStorage.setItem(key, JSON.stringify(value));
-        console.debug("saved", key, value);
+    $: if (!$current.length) {
+        current.set($next);
+        next.set([]);
     }
 
-    function loadState(key): TaskData[] {
+    history.replaceState({current: initialCurrent, next: initialNext}, document.title);
+
+    function storeStateComponent(key: string, value: TaskData[]) {
+        localStorage.setItem(key, JSON.stringify(value));
+        console.debug("stored", key, JSON.stringify(value));
+    }
+
+    function loadStateComponent(key): TaskData[] {
         const saved = localStorage.getItem(key);
         return saved ? JSON.parse(saved) : [];
     }
@@ -56,7 +51,7 @@
             fromHistory = false;
         } else {
             history.pushState(state, document.title);
-            console.debug("saved", "state", state);
+            console.debug("saved", "state", JSON.stringify(state));
         }
     }
 
@@ -66,15 +61,7 @@
         current.set(event.state.current);
         next.set(event.state.next);
 
-        console.debug("loaded", event.state);
-    }
-
-    function moveRight(event: CustomEvent<TaskData>) {
-        next.add(event.detail);
-    }
-
-    function moveLeft(event: CustomEvent<TaskData>) {
-        current.add(event.detail);
+        console.debug("loaded", JSON.stringify(event.state));
     }
 
     function createTask() {
@@ -97,17 +84,18 @@
 
     column {
         display: block;
-        flex: 1 1 300px;
+        flex: 2 1 400px;
 
         &.next {
             opacity: 0.5;
+            flex: 1 1 200px;
         }
     }
 </style>
 
-<main>
-    <svelte:window on:popstate={onPopState} />
+<svelte:window on:popstate={onPopState} />
 
+<main>
     <create>
         <Editable bind:text={newTask} on:submit={createTask} />
         <Button title="Create" on:click={createTask} />
@@ -115,21 +103,11 @@
 
     <tasks>
         <column>
-            <TaskList
-                    current={true}
-                    taskList={current}
-                    on:right={moveRight}
-                    on:changed={(changed) => current = changed.detail}
-            />
+            <TaskList current={true} taskList={current} on:right={event => next.add(event.detail)} />
         </column>
 
         <column class="next">
-            <TaskList
-                    current={false}
-                    taskList={next}
-                    on:left={moveLeft}
-                    on:changed={(changed) => next = changed.detail}
-            />
+            <TaskList current={false} taskList={next} on:left={event => current.add(event.detail)} />
         </column>
     </tasks>
 </main>

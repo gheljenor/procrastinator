@@ -1,5 +1,6 @@
 import type {TaskData} from "../types";
 import {writable} from "svelte/store";
+import {test} from "svelte/types/compiler/config";
 
 export function createTaskListStore(initialState: TaskData[]) {
     const store = writable(initialState);
@@ -44,12 +45,15 @@ export function createTaskListStore(initialState: TaskData[]) {
         },
         remove(task: TaskData) {
             store.update(list => {
-                list.slice(list.indexOf(task), 1);
+                list.splice(list.indexOf(task), 1);
                 return list;
             });
         },
-        identity() {
-            store.update(list => list);
+        updateTask(task: TaskData, text: string) {
+            store.update(list => {
+                task.title = text;
+                return list;
+            });
         },
         set(values: TaskData[]) {
             store.set(values);
